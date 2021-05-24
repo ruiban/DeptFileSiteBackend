@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dept.filesite.mapper.OfficeMapper">
+
+    <select id="listOffice"  resultType="com.dept.filesite.entity.Office">
+        select * from dept_office
+    </select>
+
+    <select id="findOfficeById" resultType="com.dept.filesite.entity.Office">
+        select * from dept_office where id = #{id}
+    </select>
+
+    <select id="listOfficeId" resultType="java.lang.Integer">
+        select id from dept_office
+    </select>
+</mapper>

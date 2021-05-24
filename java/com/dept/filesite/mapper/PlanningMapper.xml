@@ -1,0 +1,77 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dept.filesite.mapper.PlanningMapper">
+
+    <resultMap id="BaseResultMap" type="com.dept.filesite.entity.Planning">
+        <id column="id" property="id"/>
+        <result column="name" property="name" />
+        <result column="image_number" property="imageNumber" />
+        <collection property="images"
+                    select="com.dept.filesite.mapper.ImageMapper.selectImageList" column="{qid=id}">
+        </collection>
+    </resultMap>
+
+    <insert id="insertPlanning" parameterType="com.dept.filesite.entity.Planning" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into planning set name=#{name}, image_number=#{imageNumber},
+    </insert>
+
+    <select id="countTotal" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(*) from planning
+        <where>
+            <if test="planning != null">
+                <if test="planning.name != null and planning.name != '' ">
+                    name like CONCAT('%',#{planning.name}, '%')
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <select id="listPlanning" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select * from planning
+        <where>
+            <if test="planning != null">
+                <if test="planning.name != null and planning.name != '' ">
+                    and name like CONCAT('%',#{planning.name},'%')
+                </if>
+            </if>
+        </where>
+        order by id desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <update id="updatePlanning" parameterType="com.dept.filesite.entity.Planning">
+        update planning
+        <set>
+            <if test="name != null and name != '' ">
+                name = #{name},
+            </if>
+            <if test="imageNumber != null and imageNumber != '' ">
+                image_number = #{imageNumber}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePlanningById">
+        delete from planning  where id in
+        <foreach collection="aids" item="aid" open="(" close=")" separator=",">
+            #{aid}
+        </foreach>
+    </delete>
+
+    <select id="findPlanningById" resultMap="BaseResultMap">
+        select * from planning where id = #{id}
+    </select>
+
+    <select id="findPlanningByName" resultMap="BaseResultMap">
+        select * from planning where file_name = #{fileName}
+    </select>
+
+    <select id="selectImageList" resultMap="BaseResultMap">
+        SELECT
+            img.id, img.name, img.path
+        FROM
+            image_list AS img
+    </select>
+</mapper>

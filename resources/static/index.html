@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=pragma content=no-cache><meta http-equiv=cache-control content=no-cache><meta http-equiv=expires content=0><title>部门文档管理系统</title><link href=/DeptFileSite/static/css/app.631d6bab659181799053097568329f72.css rel=stylesheet></head><body><div id=warnTable calss=warnTable width=auto heigth=200px style="text-align:center; display: none"><img src=./static/images/browser.jpg><h2>本站不支持IE浏览器,请使用Chrome或Fierfox浏览器</h2><div><h2>本站链接：<span id=webUrl>http://dq20server:8081/DeptFileSite/index.html</span> <button onclick=Copy()>复制链接</button></h2></div></div><div id=app></div><script type=text/javascript>var userAgent = navigator.userAgent;
+      var arr = userAgent.split(' ');
+      var chromeVersion = '';
+      var version = 65;
+    　for(var i=0;i < arr.length;i++){
+    　　　　if(/chrome/i.test(arr[i])){
+          chromeVersion = arr[i]
+        }　   
+      }
+    　if(chromeVersion){
+    　　　version = Number(chromeVersion.split('/')[1].split('.')[0]);
+    　}
+    	var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") >-1;
+    	if(isIE){
+    		//alert("不支持IE,请使用Chrome或Fierfox");
+    		document.getElementById('warnTable').style.display="";
+    	}
+      if(userAgent.indexOf("Chrome") > -1 && version < 49){
+        alert('您使用的谷歌浏览器版本过低，导致有些功能无法使用，为了更好地体验请将浏览器升级或重新安装高版本的谷歌浏览器！');
+      }
+      function Copy() {
+        var text =document.getElementById("webUrl").innerText;
+        var input = document.createElement('input');
+        input.setAttribute('id', 'copyInput');
+        input.setAttribute('value', text);
+        document.getElementsByTagName('body')[0].appendChild(input);
+        document.getElementById('copyInput').select();
+        if (document.execCommand('Copy')) {
+          document.getElementsByTagName('body')[0].removeChild(input);
+            alert("复制成功");
+        }
+        document.getElementsByTagName('body')[0].removeChild(input);
+      }</script><script type=text/javascript src=/DeptFileSite/static/js/manifest.1180aeab844f7ca53bec.js></script><script type=text/javascript src=/DeptFileSite/static/js/vendor.6919047e9c68f72d9f7d.js></script><script type=text/javascript src=/DeptFileSite/static/js/app.000df3498ab335364e80.js></script></body></html>

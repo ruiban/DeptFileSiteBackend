@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dept.filesite.mapper.TemperatureMapper">
+    <resultMap id="BaseResultMap" type="com.dept.filesite.entity.Temperature">
+        <id column="id" property="id" />
+        <result column="office" property="office" />
+        <result column="name" property="name" />
+        <result column="temperature_am" property="temperatureAM" />
+        <result column="temperature_pm" property="temperaturePM" />
+        <result column="forenoon" property="forenoon" />
+        <result column="afternoon" property="afternoon" />
+        <result column="note" property="note" />
+        <result column="today" property="today" />
+        <result column="mask" property="mask"/>
+    </resultMap>
+
+    <insert id="addTemperature" parameterType="com.dept.filesite.entity.Temperature" useGeneratedKeys="true" keyProperty="id">
+        insert into dept_temperature (office,name,temperature_am,forenoon,temperature_pm,afternoon,
+        note,today,mask) values(#{office},#{name},#{temperatureAM},#{forenoon},#{temperaturePM},#{afternoon},
+        #{note},#{today},#{mask})
+    </insert>
+
+    <insert id="insertTemperature" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        insert into dept_temperature (office,name,temperature_am,forenoon,temperature_pm,afternoon,
+        note,today,mask) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+                #{item.office},
+                #{item.name},
+                #{item.temperatureAM},
+                #{item.forenoon},
+                #{item.temperaturePM},
+                #{item.afternoon},
+                #{item.note},
+                #{item.today},
+                #{item.mask}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateTemperature" parameterType="java.util.List">
+        update dept_temperature
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="temperature_am = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.temperatureAM != null and item.temperatureAM != ''">
+                        when id=#{item.id} then #{item.temperatureAM}
+                    </if>
+                    <if test="item.temperatureAM == null or item.temperatureAM == ''">
+                        when id=#{item.id} then dept_temperature.temperature_am
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="temperature_pm = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.temperaturePM != null and item.temperaturePM != ''">
+                        when id=#{item.id} then #{item.temperaturePM}
+                    </if>
+                    <if test="item.temperaturePM == null or item.temperaturePM == ''">
+                        when id=#{item.id} then dept_temperature.temperature_pm
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="afternoon = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.afternoon != null and item.afternoon != ''">
+                        when id=#{item.id} then #{item.afternoon}
+                    </if>
+                    <if test="item.afternoon == null or item.afternoon == ''">
+                        when id=#{item.id} then dept_temperature.afternoon
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="note = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.note != null and item.note != ''">
+                        when id=#{item.id} then #{item.note}
+                    </if>
+                    <if test="item.note == null or item.note == ''">
+                        when id=#{item.id} then dept_temperature.note
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="mask = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.mask != null ">
+                        when id=#{item.id} then #{item.mask}
+                    </if>
+                    <if test="item.mask == null ">
+                        when id=#{item.id} then dept_temperature.mask
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item.id}
+        </foreach>
+    </update>
+
+    <select id="listTemperature" parameterType="com.dept.filesite.entity.Temperature" resultMap="BaseResultMap">
+        select id,office,name,temperature_am,temperature_pm,forenoon,afternoon,note,today,mask from dept_temperature
+        <where>
+                <if test="office != null and office != ''">
+                    and office = #{office}
+                </if>
+                <if test="name != null and name != ''">
+                    and name like concat('%',#{name},'%')
+                </if>
+                <if test="temperatureAM != null and temperatureAM != ''">
+                    and temperature_am like concat('%',#{temperatureAM},'%')
+                </if>
+                <if test="temperaturePM != null and temperaturePM != ''">
+                    and temperature_pm like concat('%',#{temperaturePM},'%')
+                </if>
+                <if test="note != null and note != ''">
+                    and note = #{note}
+                </if>
+                <if test="today != null and today != ''">
+                    and today = #{today}
+                </if>
+        </where>
+    </select>
+
+    <select id="listTemperaturePage" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select id,office,name,temperature_am,temperature_pm,forenoon,afternoon,note,today,mask from dept_temperature
+        <where>
+            <if test="temperature != null">
+                <if test="temperature.office != null and temperature.office != ''">
+                    and office = #{temperature.office}
+                </if>
+                <if test="temperature.name != null and temperature.name != ''">
+                    and name like concat('%',#{temperature.name},'%')
+                </if>
+                <if test="temperature.temperatureAM != null and temperature.temperatureAM != ''">
+                    and temperature_am like concat('%',#{temperature.temperatureAM},'%')
+                </if>
+                <if test="temperature.temperaturePM != null and temperature.temperaturePM != ''">
+                    and temperature_pm like concat('%',#{temperature.temperaturePM},'%')
+                </if>
+                <if test="temperature.note != null and temperature.note != ''">
+                    and note = #{temperature.note}
+                </if>
+                <if test="temperature.today != null and temperature.today != ''">
+                    and today = #{temperature.today}
+                </if>
+            </if>
+
+        </where>
+        order by today desc,temperature_am desc,temperature_pm desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="countTemperature" parameterType="com.dept.filesite.entity.Temperature" resultType="java.lang.Integer">
+        select count(*) from dept_temperature
+        <where>
+            <if test="office != null and office != ''">
+                and office = #{office}
+            </if>
+            <if test="name != null and name != ''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="temperatureAM != null and temperatureAM != ''">
+                and temperature_am like concat('%',#{temperatureAM},'%')
+            </if>
+            <if test="temperaturePM != null and temperaturePM != ''">
+                and temperature_pm like concat('%',#{temperaturePM},'%')
+            </if>
+            <if test="note != null and note != ''">
+                and note = #{note}
+            </if>
+            <if test="today != null and today != ''">
+                and today = #{today}
+            </if>
+        </where>
+    </select>
+
+    <select id="sumMask"  resultType="com.dept.filesite.vo.MaskVO">
+        select office,count(*) as persons, if(count(temperature_am) &lt; 1,"未提交","已提交") as submitAM,
+        if(count(temperature_pm) &lt; 1,"未提交","已提交") as submitPM,sum(mask) as maskTotal,today from dept_temperature
+        <where>
+            <if test="office != null and office != '' ">
+                and office = #{office}
+            </if>
+            <if test="today != null and today != '' ">
+                and today = #{today}
+            </if>
+        </where>
+        group by office
+    </select>
+
+    <select id="findTemperatureById" resultType="com.dept.filesite.entity.Temperature">
+        select * from dept_temperature where id = #{id}
+    </select>
+
+    <delete id="deleteTemperatureById">
+        delete from dept_temperature where id = #{id}
+    </delete>
+
+    <delete id="deleteTemperatureByName">
+        delete from dept_temperature where name = #{name} and office = #{office}
+    </delete>
+
+</mapper>

@@ -1,0 +1,46 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dept.filesite.mapper.DistributionChannelMapper">
+
+    <resultMap id="BaseResultMap" type="com.dept.filesite.entity.DistributionChannel">
+        <id column="id" property="id" />
+        <result column="name" property="name"/>
+        <result column="level" property="level"/>
+        <result column="father" property="father"/>
+    </resultMap>
+
+    <insert id="insertDistributionChannel" parameterType="com.dept.filesite.entity.DistributionChannel" useGeneratedKeys="true"
+    keyProperty="id">
+        insert into distribution_channel set name=#{name}, level=#{lever}, father=#{father}
+    </insert>
+
+    <select id="countTotal" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(*) from distribution_channel
+        <where>
+            <if test="distribution_channel != null">
+                <if test="distribution_channel.name != null and distribution_channel.name != '' ">
+                    name like CONCAT('%', #{distribution_channel.name}, '%')
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <select id="listDistributionChannel" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select * from distribution_channel
+        <where>
+            <if test="distribution_channel != null">
+                <if test="distribution_channel.name != null and distribution_channel.name != '' ">
+                    and name like CONCAT('%', #{distribution_channel.name}, '%')
+                </if>
+            </if>
+        </where>
+        order by id esc limit #{startIndex}, #{pageSize}
+    </select>
+    <select id="findDistributionChannelById" resultMap="BaseResultMap">
+        select * from distribution_channel where id = #{id}
+    </select>
+    <select id="findDistributionChannelByFather" resultMap="BaseResultMap">
+        select * from distribution_channel where father = #{father}
+    </select>
+</mapper>

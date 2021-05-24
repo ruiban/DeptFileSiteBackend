@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dept.filesite.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="com.dept.filesite.entity.User">
+        <id column="id" property="id" />
+        <result column="username" property="username" ></result>
+        <result column="password" property="password" ></result>
+        <result column="employee_id" property="employeeId" ></result>
+        <result column="mail" property="mail" ></result>
+        <result column="office" property="office" ></result>
+        <result column="enabled" property="enabled" ></result>
+        <result column="gmt_create" property="gmtCreate" ></result>
+        <result column="gmt_modified" property="gmtModified" ></result>
+        <collection property="roles" ofType="com.dept.filesite.entity.Role">
+            <id column="rid" property="id"></id>
+            <result column="rname" property="name"></result>
+        </collection>
+
+    </resultMap>
+
+    <insert id="insertUser" parameterType="com.dept.filesite.entity.User" keyProperty="id" useGeneratedKeys="true">
+        insert into dept_user set username = #{username}, password = #{password},
+        employee_id = #{employeeId}, mail = #{mail}, office = #{office},
+        gmt_create = #{gmtCreate}
+    </insert>
+
+    <select id="countTotalUser" parameterType="com.dept.filesite.entity.User" resultType="java.lang.Integer">
+        select count(*) from dept_user
+        <where>
+
+            <if test="username != null and username != '' ">
+                and username like CONCAT('%',#{username},'%')
+            </if>
+            <if test="employeeId != null and employeeId != '' ">
+                and employee_id like CONCAT('%',#{employeeId},'%')
+            </if>
+            <if test="mail != null and mail != '' ">
+                and mail like CONCAT('%',#{mail}, '%')
+            </if>
+            <if test="office != null and office != '' ">
+                and office = #{office}
+            </if>
+            <!--id not in (select u.id from dept_user u,dept_role_user ru where u.id = ru.user_id and ru.role_id = 1)-->
+        </where>
+    </select>
+    
+    <select id="countUserGroupByOffice" resultType="java.util.HashMap">
+        select office, count(*) as persons from dept_user group by office
+    </select>
+
+    <select id="listUser" resultMap="BaseResultMap">
+        select * from dept_user
+        <!--where id not in (select u.id from dept_user u,dept_role_user ru where u.id = ru.user_id and ru.role_id = 1)-->
+        where 1=1
+        <choose>
+            <when test="user != null">
+                <if test="user.username != null and user.username != '' ">
+                    and username like CONCAT('%',#{user.username},'%')
+                </if>
+                <if test="user.employeeId != null and user.employeeId != '' ">
+                    and  employee_id like CONCAT('%',#{user.employeeId},'%')
+                </if>
+                <if test="user.mail != null and user.mail != '' ">
+                    and  mail like CONCAT('%',#{user.mail}, '%')
+                </if>
+                <if test="user.office != null and user.office != '' ">
+                    and  office = #{user.office}
+                </if>
+                limit #{startIndex},#{pageSize}
+            </when>
+            <otherwise>
+                limit #{startIndex},#{pageSize}
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findUserById" resultMap="BaseResultMap">
+        select u.*,r.id AS rid,r.name AS rname from dept_user u,dept_role r,dept_role_user ru where u.id =ru.user_id and
+        r.id =ru.role_id and u.id =#{id}
+    </select>
+
+    <select id="findUserByUsername" resultMap="BaseResultMap">
+        select u.*,r.id AS rid,r.name AS rname from dept_user u,dept_role r,dept_role_user ru where u.id =ru.user_id and
+        r.id =ru.role_id and username = #{username}
+    </select>
+
+    <select id="findUserByEmployeeId" resultMap="BaseResultMap">
+        select u.*,r.id AS rid,r.name AS rname from dept_user u,dept_role r,dept_role_user ru where u.id =ru.user_id and
+        r.id =ru.role_id and employee_id = #{employeeId}
+    </select>
+
+    <select id="findUserByMail" resultMap="BaseResultMap">
+        select u.*,r.id AS rid,r.name AS rname from dept_user u,dept_role r,dept_role_user ru where u.id =ru.user_id and
+        r.id =ru.role_id and mail = #{mail}
+    </select>
+
+    <!--按科室查找，不分页-->
+    <select id="listUserByOffice" resultMap="BaseResultMap">
+        select * from dept_user where office = #{office}
+    </select>
+    
+    
+    <update id="updateUserEnabled">
+        update dept_user set enabled = #{enabled} where id = #{id}
+    </update>
+
+    <update id="updateUserPassword">
+        update dept_user set password = #{password}, gmt_modified = #{gmtModified} where id = #{id}
+    </update>
+    
+
+    
+    <delete id="deleteUserById">
+        delete u,ru from dept_user as u left join dept_role_user as ru on u.id = ru.user_id where u.id=#{id}
+    </delete>
+
+    <select id="listUserByRoleAndOffice" resultMap="BaseResultMap">
+        select u.* from dept_user u, dept_role r, dept_role_user ru
+        where r.id = #{rid} and r.id = ru.role_id and ru.user_id = u.id and u.office in
+        <foreach collection="offices" item="office"  separator="," open="(" close=")">
+            #{office}
+        </foreach>
+
+    </select>
+</mapper>
