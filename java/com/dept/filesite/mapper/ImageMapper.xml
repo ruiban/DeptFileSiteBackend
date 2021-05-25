@@ -8,14 +8,4 @@
         <result column="name" property="name" ></result>
         <result column="path" property="path"></result>
     </resultMap>
-
-<select id="selectImageList" resultMap="Image">
-    SELECT
-        img.id, img.name, img.path
-    FROM
-        image_list AS img
-    <where>
-        img.iid = #{iid}
-    </where>
-</select>
 </mapper>

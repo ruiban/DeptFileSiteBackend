@@ -5,10 +5,12 @@
 
     <resultMap id="BaseResultMap" type="com.dept.filesite.entity.Planning">
         <id column="id" property="id"/>
+        <result column="brand" property="brand"></result>
         <result column="name" property="name" />
-        <result column="image_number" property="imageNumber" />
-        <collection property="images"
-                    select="com.dept.filesite.mapper.ImageMapper.selectImageList" column="{qid=id}">
+        <collection property="images" ofType="com.dept.filesite.entity.Image">
+            <id column="o_id" property="id"></id>
+            <result column="o_name" property="name"></result>
+            <result column="o_path" property="path"></result>
         </collection>
     </resultMap>
 
@@ -61,17 +63,15 @@
     </delete>
 
     <select id="findPlanningById" resultMap="BaseResultMap">
-        select * from planning where id = #{id}
+        SELECT
+            pq.id, pq.brand, pq.name, img.id AS oid, img.path AS opath, img.name AS oname
+        FROM
+            planning AS pq
+            LEFT JOIN image_list img on pq.id = img.pid
+            WHERE pq.id = #{id}
     </select>
 
     <select id="findPlanningByName" resultMap="BaseResultMap">
         select * from planning where file_name = #{fileName}
-    </select>
-
-    <select id="selectImageList" resultMap="BaseResultMap">
-        SELECT
-            img.id, img.name, img.path
-        FROM
-            image_list AS img
     </select>
 </mapper>

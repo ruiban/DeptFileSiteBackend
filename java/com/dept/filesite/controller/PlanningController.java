@@ -1,5 +1,6 @@
 package com.dept.filesite.controller;
 
+import com.dept.filesite.entity.Image;
 import com.dept.filesite.entity.Planning;
 import com.dept.filesite.entity.Page;
 import com.dept.filesite.service.PlanningService;
@@ -46,6 +47,8 @@ public class PlanningController {
     @RequestMapping(value = "/planning_detail", method = {RequestMethod.POST})
     public Planning getPlanningById(Integer id){
         Planning planning=planningService.findPlanningById(id);
+        List<Image> images = planning.getImages();
+        System.out.println(images);
         return planning;
     }
 
