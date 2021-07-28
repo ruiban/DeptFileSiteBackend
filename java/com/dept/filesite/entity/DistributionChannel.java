@@ -12,7 +12,8 @@ public class DistributionChannel {
     private int id;
     private String name;
     private int level;
-    private int father;
+    private int parentId;
+    private String describtion;
 
     public int getId() {
         return id;
@@ -26,8 +27,8 @@ public class DistributionChannel {
     public int getLevel() { return level; }
     public void setLevel(int level) { this.level = level; }
 
-    public int getFather() { return father; }
-    public void setFather(int father) { this.father = father; }
+    public int getParentId() { return parentId; }
+    public void setParentId(int parentId) { this.parentId = parentId; }
 
     @Override
     public String toString() {
@@ -35,7 +36,7 @@ public class DistributionChannel {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", level = '" + level + '\'' +
-                ", father = '" + father + '\'' +
+                ", parentId = '" + parentId + '\'' +
                 "}";
     }
 }

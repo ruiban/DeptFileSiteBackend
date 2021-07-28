@@ -43,11 +43,6 @@ public class AnounceController {
         anounceService.downloadAnounce(filePath,response);
 
     }
-    @RequestMapping(value = "/viewImage")
-    public void viewImage(String filePath, HttpServletResponse response) {
-        anounceService.viewImage(filePath, response);
-    }
-
     @RequestMapping(value = "/update")
     public ResultVO<String> updateAnounce(Anounce anounce){
         return anounceService.updateAnounce(anounce);

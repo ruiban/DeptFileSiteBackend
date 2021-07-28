@@ -2,12 +2,14 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dept.filesite.mapper.DistributionChannelMapper">
-
-    <resultMap id="BaseResultMap" type="com.dept.filesite.entity.DistributionChannel">
+    <resultMap id="BaseResultMap" type="com.dept.filesite.entity.DistributionChannelChildren">
         <id column="id" property="id" />
         <result column="name" property="name"/>
         <result column="level" property="level"/>
-        <result column="father" property="father"/>
+        <result column="parentId" property="parent_id"/>
+        <collection property="children" resultMap="BaseResultMap" columnPrefix="child_">
+
+        </collection>
     </resultMap>
 
     <insert id="insertDistributionChannel" parameterType="com.dept.filesite.entity.DistributionChannel" useGeneratedKeys="true"
@@ -37,10 +39,13 @@
         </where>
         order by id esc limit #{startIndex}, #{pageSize}
     </select>
-    <select id="findDistributionChannelById" resultMap="BaseResultMap">
-        select * from distribution_channel where id = #{id}
-    </select>
-    <select id="findDistributionChannelByFather" resultMap="BaseResultMap">
-        select * from distribution_channel where father = #{father}
+    <select id="distributionChannelWithChildren" resultMap="BaseResultMap">
+        select
+        c1.id,
+        c1.name,
+        c2.id   child_id,
+        c2.name child_name
+        from distribution_channel c1 left join distribution_channel c2 on c1.id = c2.parent_id
+        where c1.parent_id = 0
     </select>
 </mapper>

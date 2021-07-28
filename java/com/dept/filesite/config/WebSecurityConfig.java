@@ -43,12 +43,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/reg").hasAnyRole("超级管理员","部门领导","科室主任")
-                .antMatchers("/anounce/delete").hasAnyRole("超级管理员","体系管理员")
-                .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**","/swagger-resources/configuration/ui","/swagger-ui.html").permitAll()
-                .antMatchers("/temperature/*").hasAnyRole("超级管理员","公司领导","部门领导","科室主任","体温管理员","体温记录员")
+                .antMatchers("/reg").hasAnyRole("超级管理员", "部门领导", "科室主任")
+                .antMatchers("/anounce/delete").hasAnyRole("超级管理员", "体系管理员")
+                .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/swagger-resources/configuration/ui", "/swagger-ui.html").permitAll()
+                .antMatchers("/temperature/*").hasAnyRole("超级管理员", "公司领导", "部门领导", "科室主任", "体温管理员", "体温记录员")
                 .anyRequest().authenticated() //其他路径登录后即可访问
-        .and().formLogin().loginPage("/login").successHandler(new AuthenticationSuccessHandler() {
+                .and().formLogin().loginPage("/login").successHandler(new AuthenticationSuccessHandler() {
             @Override
             public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
                 httpServletResponse.setContentType("application/json;charset=utf-8");
@@ -66,15 +66,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         httpServletResponse.setContentType("application/json;charset=utf-8");
                         String msg = "登陆失败";
                         String eMsg = e.toString();
-                        System.out.println("错误原因："+eMsg);
+                        System.out.println("错误原因：" + eMsg);
 
-                        if(eMsg.indexOf("UsernameNotFoundException") != -1){
+                        if (eMsg.indexOf("UsernameNotFoundException") != -1) {
                             msg = "用户名不存在";
                         }
-                        if(eMsg.indexOf("BadCredentialsException") != -1){
+                        if (eMsg.indexOf("BadCredentialsException") != -1) {
                             msg = "账号或密码错误";
                         }
-                        if(eMsg.indexOf("DisabledException") != -1){
+                        if (eMsg.indexOf("DisabledException") != -1) {
                             msg = "账号未启用";
                         }
                         PrintWriter out = httpServletResponse.getWriter();
@@ -94,7 +94,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                                   resp.setContentType("application/json;charset=utf-8");
                                                   resp.setStatus(401);
                                                   PrintWriter out = resp.getWriter();
-                                                  ResultVO<String> result = new ResultVO<String>(ResultCodeEnum.FAILED,"401,用户无认证");
+                                                  ResultVO<String> result = new ResultVO<String>(ResultCodeEnum.FAILED, "401,用户无认证");
 
                                                   if (authException instanceof InsufficientAuthenticationException) {
                                                       result.setData("请求失败，请联系管理员!");
@@ -108,10 +108,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-
-
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/index.html","/static/**");
+        web.ignoring().antMatchers("/index.html", "/static/**");
     }
 }
